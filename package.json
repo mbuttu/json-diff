@@ -1,0 +1,15 @@
+{
+  "name": "json-diff",
+  "version": "0.0.1",
+  "description": "",
+  "main": "./bin/json-diff",
+  "bin": {
+    "json-diff": "./bin/json-diff"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "underscore": "^1.8.3"
+  }
+}
