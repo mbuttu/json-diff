@@ -185,7 +185,7 @@ if (differences.length) {
       });
     }
 
-    if (missingKeys.inLeftButNotRight.length || missingKeys.inRightButNotLeft.length) {
+    if (missingKeys && ((missingKeys.inLeftButNotRight && missingKeys.inLeftButNotRight.length) || (missingKeys.inRightButNotLeft && missingKeys.inRightButNotLeft.length))) {
       console.log("Difference in keys");
       console.log();
 
