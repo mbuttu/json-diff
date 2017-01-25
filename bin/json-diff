@@ -2,7 +2,7 @@
 
 /*eslint no-console:0*/
 
-const _ = require("underscore");
+const _ = require("lodash");
 const fs = require("fs");
 const path = require("path");
 
@@ -43,7 +43,7 @@ const ignore = [
 ];
 
 function filterKeys(keys) {
-  return _.filter(keys, (key) => !_.contains(ignore, key));
+  return _.filter(keys, (key) => !_.includes(ignore, key));
 }
 
 function checkIfArrayOfObjectIds(array) {
@@ -104,8 +104,8 @@ function checkMissingKeys(left, right) {
 }
 
 function checkMissingElements(left, right) {
-  const leftKeys = _.pluck(left, uniqueKey);
-  const rightKeys = _.pluck(right, uniqueKey);
+  const leftKeys = _.map(left, "uniqueKey");
+  const rightKeys = _.map(right, "uniqueKey");
   const inLeftButNotRight = _.map(_.difference(leftKeys, rightKeys), (key) => {
     return _.find(left, (leftObject) => leftObject[uniqueKey] === key);
   });
