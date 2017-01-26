@@ -2,10 +2,11 @@
 
 /*eslint no-console:0*/
 
-const _ = require("lodash");
-const fs = require("fs");
-const path = require("path");
-const differ = require("../lib/differ");
+import * as _ from "lodash";
+import * as fs from "fs";
+import * as path from "path";
+import * as differ from "../lib/differ";
+
 const {checkMissingElements, diff} = differ;
 
 const leftFileName = process.argv[2];
@@ -28,15 +29,15 @@ Examples:
   process.exit(1);
 }
 
-differ.ignore = ["_id", "createdOn", "modifiedOn", "__v"];
+differ.options.ignore = ["_id", "createdOn", "modifiedOn", "__v"];
 
-differ.uniqueKey = uniqueKey;
+differ.options.uniqueKey = uniqueKey;
 
-const left = JSON.parse(fs.readFileSync(path.resolve(leftFileName)));
-const right = JSON.parse(fs.readFileSync(path.resolve(rightFileName)));
+const left = JSON.parse(fs.readFileSync(path.resolve(leftFileName), "utf8"));
+const right = JSON.parse(fs.readFileSync(path.resolve(rightFileName), "utf8"));
 const paddingLength = Math.max(leftFileName.length, rightFileName.length);
 
-function pad(str) {
+function pad(str: string) {
   const spaces = " ".repeat(paddingLength - str.length);
 
   return `${str}${spaces}`;

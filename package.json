@@ -4,10 +4,11 @@
   "description": "",
   "main": "./bin/json-diff",
   "bin": {
-    "json-diff": "./bin/json-diff.js"
+    "json-diff": "./build/bin/json-diff.js"
   },
   "scripts": {
-    "format": "git diff-index --quiet HEAD -- && git ls-files **/*.js | xargs prettier --bracket-spacing false --write || echo 'Cannot format if there are changed files'"
+    "format": "git diff-index --quiet HEAD -- && git ls-files **/*.ts | xargs prettier --bracket-spacing false --write || echo 'Cannot format if there are changed files'",
+    "tsc": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,9 @@
     "lodash": "^4.17.4"
   },
   "devDependencies": {
-    "prettier": "^0.11.0"
+    "@types/lodash": "^4.14.50",
+    "@types/node": "^7.0.4",
+    "prettier": "^0.11.0",
+    "typescript": "^2.1.5"
   }
 }

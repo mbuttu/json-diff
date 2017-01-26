@@ -1,29 +1,37 @@
 const _ = require("lodash");
 
-// A list of keys to ignore in `filterKeys`. This is exported and can be
-// changed by the caller.
-let ignore = [];
-// A `uniqueKey` is required, and should be set by the caller.
-let uniqueKey = "";
+export const options: {
+  uniqueKey: string;
+  ignore: Array<string>;
+} = {
+  // A `uniqueKey` is required, and should be set by the caller.
+  uniqueKey: "",
+
+  // A list of keys to ignore in `filterKeys`. This is exported and can be
+  // changed by the caller.
+  ignore: []
+};
+
+const {ignore, uniqueKey} = options;
 
 // Given a list of `keys`, return a new list with all of the keys listed in
 // `ignore` removed.
-function filterKeys(keys) {
-  return _.filter(keys, key => !_.includes(ignore, key));
+function filterKeys(keys: Array<string>) {
+  return _.filter(keys, (key: string) => !_.includes(ignore, key));
 }
 
 // Returns true if the first item in the array is a mongo ObjectId.
-function checkIfArrayOfObjectIds(array) {
+function checkIfArrayOfObjectIds(array: Array<any>) {
   return !!(_.isArray(array) && array.length && array[0].$oid);
 }
 
-function checkDifferentValues(left, right) {
+function checkDifferentValues(left: Object, right: Object) {
   const leftKeys = filterKeys(_.keys(left));
   const rightKeys = filterKeys(_.keys(right));
   const commonKeys = _.intersection(leftKeys, rightKeys);
-  const differences = [];
+  const differences: Array<any> = [];
 
-  _.each(commonKeys, key => {
+  _.each(commonKeys, (key: string) => {
     const leftValue = left[key];
     const rightValue = right[key];
     const isObjectId = !_.isArray(leftValue) &&
@@ -34,9 +42,9 @@ function checkDifferentValues(left, right) {
       leftValue.$date;
 
     if (_.isObject(leftValue) && !leftValue.$oid) {
-      const toDelete = [];
+      const toDelete: Array<any> = [];
 
-      _.each(leftValue, (value, key) => {
+      _.each(leftValue, (value: any, key: string) => {
         if (_.isObject(value) && !_.isArray(value) && value.$oid) {
           toDelete.push(key);
         } else if (_.isArray(value) && checkIfArrayOfObjectIds(value)) {
@@ -44,7 +52,7 @@ function checkDifferentValues(left, right) {
         }
       });
 
-      _.each(toDelete, key => {
+      _.each(toDelete, (key: string) => {
         delete leftValue[key];
         delete rightValue[key];
       });
@@ -61,7 +69,7 @@ function checkDifferentValues(left, right) {
 }
 
 // Given two objects, return keys that appear in one but not the other.
-function checkMissingKeys(left, right) {
+function checkMissingKeys(left: Object, right: Object) {
   const leftKeys = filterKeys(_.keys(left));
   const rightKeys = filterKeys(_.keys(right));
 
@@ -72,14 +80,14 @@ function checkMissingKeys(left, right) {
 }
 
 // Given two arrays, return elements that appear in one but not the other.
-function checkMissingElements(left, right) {
+export function checkMissingElements(left: Object, right: Object) {
   const leftKeys = _.map(left, "uniqueKey");
   const rightKeys = _.map(right, "uniqueKey");
-  const inLeftButNotRight = _.map(_.difference(leftKeys, rightKeys), key => {
-    return _.find(left, leftObject => leftObject[uniqueKey] === key);
+  const inLeftButNotRight = _.map(_.difference(leftKeys, rightKeys), (key: string) => {
+    return _.find(left, (leftObject: Object) => leftObject[uniqueKey] === key);
   });
-  const inRightButNotLeft = _.map(_.difference(rightKeys, leftKeys), key => {
-    return _.find(right, rightObject => rightObject[uniqueKey] === key);
+  const inRightButNotLeft = _.map(_.difference(rightKeys, leftKeys), (key: string) => {
+    return _.find(right, (rightObject: Object) => rightObject[uniqueKey] === key);
   });
 
   return {inLeftButNotRight, inRightButNotLeft};
@@ -87,20 +95,26 @@ function checkMissingElements(left, right) {
 
 // Given two arrays, return an array for each changed object that explains
 // whether it has different values or missing keys.
-function diff(left, right) {
-  const result = [];
+export function diff(left: Array<any>, right: Array<any>) {
+  const result: Array<any> = [];
 
-  _.each(left, leftObject => {
+  _.each(left, (leftObject: Object) => {
     const rightObject = _.find(
       right,
-      rightObject => _.isEqual(rightObject[uniqueKey], leftObject[uniqueKey])
+      (rightObject: Object) => _.isEqual(rightObject[uniqueKey], leftObject[uniqueKey])
     );
 
     if (!rightObject) {
       return;
     }
 
-    const ret = {};
+    const ret: {
+      missingKeys: Object;
+      differentValues: Array<any>;
+    } = {
+      missingKeys: [],
+      differentValues: []
+    };
 
     const missingKeys = checkMissingKeys(leftObject, rightObject);
 
@@ -123,13 +137,4 @@ function diff(left, right) {
   });
 
   return result;
-}
-
-module.exports = {
-  checkDifferentValues,
-  checkMissingKeys,
-  checkMissingElements,
-  diff,
-  ignore,
-  uniqueKey
 };
