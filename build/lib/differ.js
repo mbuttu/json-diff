@@ -104,4 +104,3 @@ function diff(left, right) {
     return result;
 }
 exports.diff = diff;
-;

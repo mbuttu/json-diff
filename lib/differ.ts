@@ -1,12 +1,8 @@
 const _ = require("lodash");
 
-export const options: {
-  uniqueKey: string;
-  ignore: Array<string>;
-} = {
+export const options: {uniqueKey: string, ignore: Array<string>} = {
   // A `uniqueKey` is required, and should be set by the caller.
   uniqueKey: "",
-
   // A list of keys to ignore in `filterKeys`. This is exported and can be
   // changed by the caller.
   ignore: []
@@ -83,12 +79,24 @@ function checkMissingKeys(left: Object, right: Object) {
 export function checkMissingElements(left: Object, right: Object) {
   const leftKeys = _.map(left, "uniqueKey");
   const rightKeys = _.map(right, "uniqueKey");
-  const inLeftButNotRight = _.map(_.difference(leftKeys, rightKeys), (key: string) => {
-    return _.find(left, (leftObject: Object) => leftObject[uniqueKey] === key);
-  });
-  const inRightButNotLeft = _.map(_.difference(rightKeys, leftKeys), (key: string) => {
-    return _.find(right, (rightObject: Object) => rightObject[uniqueKey] === key);
-  });
+  const inLeftButNotRight = _.map(_.difference(leftKeys, rightKeys), (
+    key: string
+  ) =>
+    {
+      return _.find(
+        left,
+        (leftObject: Object) => leftObject[uniqueKey] === key
+      );
+    });
+  const inRightButNotLeft = _.map(_.difference(rightKeys, leftKeys), (
+    key: string
+  ) =>
+    {
+      return _.find(
+        right,
+        (rightObject: Object) => rightObject[uniqueKey] === key
+      );
+    });
 
   return {inLeftButNotRight, inRightButNotLeft};
 }
@@ -101,17 +109,15 @@ export function diff(left: Array<any>, right: Array<any>) {
   _.each(left, (leftObject: Object) => {
     const rightObject = _.find(
       right,
-      (rightObject: Object) => _.isEqual(rightObject[uniqueKey], leftObject[uniqueKey])
+      (rightObject: Object) =>
+        _.isEqual(rightObject[uniqueKey], leftObject[uniqueKey])
     );
 
     if (!rightObject) {
       return;
     }
 
-    const ret: {
-      missingKeys: Object;
-      differentValues: Array<any>;
-    } = {
+    const ret: {missingKeys: Object, differentValues: Array<any>} = {
       missingKeys: [],
       differentValues: []
     };
@@ -137,4 +143,4 @@ export function diff(left: Array<any>, right: Array<any>) {
   });
 
   return result;
-};
+}
