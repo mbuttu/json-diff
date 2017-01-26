@@ -4,7 +4,7 @@
   "description": "",
   "main": "./bin/json-diff",
   "bin": {
-    "json-diff": "./bin/json-diff"
+    "json-diff": "./bin/json-diff.js"
   },
   "scripts": {
     "format": "git diff-index --quiet HEAD -- && git ls-files **/*.js | xargs prettier --bracket-spacing false --write || echo 'Cannot format if there are changed files'"
