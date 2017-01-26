@@ -6,10 +6,16 @@
   "bin": {
     "json-diff": "./bin/json-diff"
   },
+  "scripts": {
+    "format": "git diff-index --quiet HEAD -- && git ls-files **/*.js | xargs prettier --bracket-spacing false --write || echo 'Cannot format if there are changed files'"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "prettier": "^0.11.0"
   }
 }
