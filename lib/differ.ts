@@ -1,4 +1,4 @@
-const _ = require("lodash");
+import * as _ from "lodash";
 
 export const options: {uniqueKey: string, ignore: Array<string>} = {
   // A `uniqueKey` is required, and should be set by the caller.
