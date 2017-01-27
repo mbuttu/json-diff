@@ -1,10 +1,10 @@
 {
-  "name": "mjson-diff",
+  "name": "json-diff",
   "version": "0.0.1",
   "description": "",
-  "main": "./bin/mjson-diff",
+  "main": "./bin/json-diff",
   "bin": {
-    "mjson-diff": "./build/bin/mjson-diff.js"
+    "json-diff": "./build/bin/json-diff.js"
   },
   "scripts": {
     "format": "git diff-index --quiet HEAD -- && git ls-files **/*.ts | xargs prettier --bracket-spacing false --write || echo 'Cannot format if there are changed files'",
