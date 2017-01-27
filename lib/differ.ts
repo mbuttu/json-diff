@@ -76,8 +76,7 @@ function checkMissingKeys(left: Object, right: Object) {
 }
 
 // Given two arrays, return elements that appear in one but not the other.
-// TODO: Need to figure out how to define `left` and `right` as type Dictionary.
-export function checkMissingElements(left: any, right: any) {
+export function checkMissingElements(left: _.Dictionary<{}>, right: _.Dictionary<{}>) {
   const leftKeys = _.map(left, "uniqueKey");
   const rightKeys = _.map(right, "uniqueKey");
   const inLeftButNotRight = _.map(_.difference(leftKeys, rightKeys), (
