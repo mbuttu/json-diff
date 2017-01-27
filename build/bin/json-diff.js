@@ -4,6 +4,29 @@ const _ = require("lodash");
 const fs = require("fs");
 const path = require("path");
 const differ = require("../lib/differ");
+const chalk = require("chalk");
+const jsdiff = require("diff");
+function jsonDiff(left, right) {
+    let diff = `
+${chalk.red(`--- ${leftFileName}`)}
+${chalk.green(`+++ ${rightFileName}`)}`;
+    const diffParts = jsdiff.diffJson(left, right);
+    _.each(diffParts, (part) => {
+        let color = "dim";
+        let symbol = " ";
+        if (part.added) {
+            color = "green";
+            symbol = "+";
+        }
+        else if (part.removed) {
+            color = "red";
+            symbol = "-";
+        }
+        const value = symbol + part.value.slice(1);
+        diff += chalk[color](value);
+    });
+    console.log(diff);
+}
 const { checkMissingElements, diff } = differ;
 const leftFileName = process.argv[2];
 const rightFileName = process.argv[3];
@@ -53,6 +76,9 @@ if (differences.length) {
             console.log("Difference in values");
             _.each(differentValues, ({ key, left: leftValue, right: rightValue }) => {
                 console.log(`${pad("key")}: ${key}`);
+                if (_.isObject(leftValue) && _.isObject(rightValue)) {
+                    return jsonDiff(leftValue, rightValue);
+                }
                 console.log(`${pad(leftFileName)}: ${JSON.stringify(leftValue, null, 2)}`);
                 console.log(`${pad(rightFileName)}: ${JSON.stringify(rightValue, null, 2)}`);
                 console.log();

@@ -6,6 +6,35 @@ import * as _ from "lodash";
 import * as fs from "fs";
 import * as path from "path";
 import * as differ from "../lib/differ";
+import * as chalk from "chalk";
+import * as jsdiff from "diff";
+
+function jsonDiff(left: _.Dictionary<{}>, right: _.Dictionary<{}>) {
+  let diff = `
+${chalk.red(`--- ${leftFileName}`)}
+${chalk.green(`+++ ${rightFileName}`)}`;
+
+  const diffParts = jsdiff.diffJson(left, right);
+
+  _.each(diffParts, (part) => {
+    let color = "dim";
+    let symbol = " ";
+
+    if (part.added) {
+      color = "green";
+      symbol = "+";
+    } else if (part.removed) {
+      color = "red";
+      symbol = "-";
+    }
+
+    const value = symbol + part.value.slice(1);
+
+    diff += chalk[color](value);
+  });
+
+  console.log(diff);
+}
 
 const {checkMissingElements, diff} = differ;
 
@@ -74,6 +103,10 @@ if (differences.length) {
 
       _.each(differentValues, ({key, left: leftValue, right: rightValue}) => {
         console.log(`${pad("key")}: ${key}`);
+        if (_.isObject(leftValue) && _.isObject(rightValue)) {
+          return jsonDiff(leftValue, rightValue);
+        }
+
         console.log(
           `${pad(leftFileName)}: ${JSON.stringify(leftValue, null, 2)}`
         );
