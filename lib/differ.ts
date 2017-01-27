@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 
-export const options: {uniqueKey: string, ignore: Array<string>} = {
+export const options: { uniqueKey: string, ignore: Array<string> } = {
   // A `uniqueKey` is required, and should be set by the caller.
   uniqueKey: "",
   // A list of keys to ignore in `filterKeys`. This is exported and can be
@@ -8,7 +8,7 @@ export const options: {uniqueKey: string, ignore: Array<string>} = {
   ignore: []
 };
 
-const {ignore, uniqueKey} = options;
+const { ignore, uniqueKey } = options;
 
 // Given a list of `keys`, return a new list with all of the keys listed in
 // `ignore` removed.
@@ -18,7 +18,7 @@ function filterKeys(keys: Array<string>) {
 
 // Returns true if the first item in the array is a mongo ObjectId.
 function checkIfArrayOfObjectIds(array: Array<any>) {
-  return !!(_.isArray(array) && array.length && array[0].$oid);
+  return !!(array.length && array[0].$oid);
 }
 
 function checkDifferentValues(left: Object, right: Object) {
@@ -57,7 +57,7 @@ function checkDifferentValues(left: Object, right: Object) {
     // Don't compare the values if they're ObjectIds or dates, since they
     // change between each call to `node make init`.
     if (!isObjectId && !isDate && !_.isEqual(leftValue, rightValue)) {
-      differences.push({key, left: leftValue, right: rightValue});
+      differences.push({ key, left: leftValue, right: rightValue });
     }
   });
 
@@ -72,11 +72,12 @@ function checkMissingKeys(left: Object, right: Object) {
   const inLeftButNotRight = _.difference(leftKeys, rightKeys);
   const inRightButNotLeft = _.difference(rightKeys, leftKeys);
 
-  return {inLeftButNotRight, inRightButNotLeft};
+  return { inLeftButNotRight, inRightButNotLeft };
 }
 
 // Given two arrays, return elements that appear in one but not the other.
-export function checkMissingElements(left: Object, right: Object) {
+// TODO: Need to figure out how to define `left` and `right` as type Dictionary.
+export function checkMissingElements(left: any, right: any) {
   const leftKeys = _.map(left, "uniqueKey");
   const rightKeys = _.map(right, "uniqueKey");
   const inLeftButNotRight = _.map(_.difference(leftKeys, rightKeys), (
@@ -98,7 +99,7 @@ export function checkMissingElements(left: Object, right: Object) {
       );
     });
 
-  return {inLeftButNotRight, inRightButNotLeft};
+  return { inLeftButNotRight, inRightButNotLeft };
 }
 
 // Given two arrays, return an array for each changed object that explains
@@ -117,7 +118,7 @@ export function diff(left: Array<any>, right: Array<any>) {
       return;
     }
 
-    const ret: {missingKeys: Object, differentValues: Array<any>} = {
+    const ret: { missingKeys: Object, differentValues: Array<any> } = {
       missingKeys: [],
       differentValues: []
     };
@@ -138,7 +139,7 @@ export function diff(left: Array<any>, right: Array<any>) {
     }
 
     if (!_.isEmpty(ret)) {
-      result.push(_.extend(ret, {left: leftObject, right: rightObject}));
+      result.push(_.extend(ret, { left: leftObject, right: rightObject }));
     }
   });
 

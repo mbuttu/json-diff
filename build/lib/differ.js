@@ -15,7 +15,7 @@ function filterKeys(keys) {
 }
 // Returns true if the first item in the array is a mongo ObjectId.
 function checkIfArrayOfObjectIds(array) {
-    return !!(_.isArray(array) && array.length && array[0].$oid);
+    return !!(array.length && array[0].$oid);
 }
 function checkDifferentValues(left, right) {
     const leftKeys = filterKeys(_.keys(left));
@@ -63,6 +63,7 @@ function checkMissingKeys(left, right) {
     return { inLeftButNotRight, inRightButNotLeft };
 }
 // Given two arrays, return elements that appear in one but not the other.
+// TODO: Need to figure out how to define `left` and `right` as type Dictionary.
 function checkMissingElements(left, right) {
     const leftKeys = _.map(left, "uniqueKey");
     const rightKeys = _.map(right, "uniqueKey");
