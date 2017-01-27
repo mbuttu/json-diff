@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 
-export const options: { uniqueKey: string, ignore: Array<string> } = {
+export const options: {uniqueKey: string, ignore: Array<string>} = {
   // A `uniqueKey` is required, and should be set by the caller.
   uniqueKey: "",
   // A list of keys to ignore in `filterKeys`. This is exported and can be
@@ -8,7 +8,7 @@ export const options: { uniqueKey: string, ignore: Array<string> } = {
   ignore: []
 };
 
-const { ignore, uniqueKey } = options;
+const {ignore, uniqueKey} = options;
 
 // Given a list of `keys`, return a new list with all of the keys listed in
 // `ignore` removed.
@@ -57,7 +57,7 @@ function checkDifferentValues(left: Object, right: Object) {
     // Don't compare the values if they're ObjectIds or dates, since they
     // change between each call to `node make init`.
     if (!isObjectId && !isDate && !_.isEqual(leftValue, rightValue)) {
-      differences.push({ key, left: leftValue, right: rightValue });
+      differences.push({key, left: leftValue, right: rightValue});
     }
   });
 
@@ -72,15 +72,18 @@ function checkMissingKeys(left: Object, right: Object) {
   const inLeftButNotRight = _.difference(leftKeys, rightKeys);
   const inRightButNotLeft = _.difference(rightKeys, leftKeys);
 
-  return { inLeftButNotRight, inRightButNotLeft };
+  return {inLeftButNotRight, inRightButNotLeft};
 }
 
 // Given two arrays, return elements that appear in one but not the other.
 export function checkMissingElements(
   left: _.Dictionary<{}>,
   right: _.Dictionary<{}>
-): { inLeftButNotRight: Array<_.Dictionary<{}>>, inRightButNotLeft: Array<_.Dictionary<{}>> } {
-// export function checkMissingElements(left: _.Dictionary<{}>, right: _.Dictionary<{}>) {
+): {
+  inLeftButNotRight: Array<_.Dictionary<{}>>,
+  inRightButNotLeft: Array<_.Dictionary<{}>>
+} {
+  // export function checkMissingElements(left: _.Dictionary<{}>, right: _.Dictionary<{}>) {
   const leftKeys = _.map(left, "uniqueKey");
   const rightKeys = _.map(right, "uniqueKey");
   const inLeftButNotRight = _.map(_.difference(leftKeys, rightKeys), (
@@ -102,21 +105,21 @@ export function checkMissingElements(
       );
     });
 
-  return { inLeftButNotRight, inRightButNotLeft };
+  return {inLeftButNotRight, inRightButNotLeft};
 }
 
 export interface DiffResult {
-  inLeftButNotRight: Array<_.Dictionary<{}>>;
-  inRightButNotLeft: Array<_.Dictionary<{}>>;
-  left: _.Dictionary<{}>;
-  right: _.Dictionary<{}>;
-  missingKeys: MissingKeys;
-  differentValues: Array<_.Dictionary<{}>>;
+  inLeftButNotRight: Array<_.Dictionary<{}>>,
+  inRightButNotLeft: Array<_.Dictionary<{}>>,
+  left: _.Dictionary<{}>,
+  right: _.Dictionary<{}>,
+  missingKeys: MissingKeys,
+  differentValues: Array<_.Dictionary<{}>>
 }
 
 export interface MissingKeys {
-  inLeftButNotRight: Array<string>;
-  inRightButNotLeft: Array<string>;
+  inLeftButNotRight: Array<string>,
+  inRightButNotLeft: Array<string>
 }
 
 // Given two arrays, return an array for each changed object that explains
@@ -138,7 +141,14 @@ export function diff(
       return;
     }
 
-    const ret: DiffResult = { missingKeys: {inLeftButNotRight: [], inRightButNotLeft: []}, differentValues: [], inLeftButNotRight: [], inRightButNotLeft: [], left: {}, right: {} };
+    const ret: DiffResult = {
+      missingKeys: {inLeftButNotRight: [], inRightButNotLeft: []},
+      differentValues: [],
+      inLeftButNotRight: [],
+      inRightButNotLeft: [],
+      left: {},
+      right: {}
+    };
 
     const missingKeys = checkMissingKeys(leftObject, rightObject);
 
@@ -156,7 +166,7 @@ export function diff(
     }
 
     if (!_.isEmpty(ret)) {
-      result.push(_.extend(ret, { left: leftObject, right: rightObject }));
+      result.push(_.extend(ret, {left: leftObject, right: rightObject}));
     }
   });
 

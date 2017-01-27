@@ -85,7 +85,14 @@ function diff(left, right) {
         if (!rightObject) {
             return;
         }
-        const ret = { missingKeys: { inLeftButNotRight: [], inRightButNotLeft: [] }, differentValues: [], inLeftButNotRight: [], inRightButNotLeft: [], left: {}, right: {} };
+        const ret = {
+            missingKeys: { inLeftButNotRight: [], inRightButNotLeft: [] },
+            differentValues: [],
+            inLeftButNotRight: [],
+            inRightButNotLeft: [],
+            left: {},
+            right: {}
+        };
         const missingKeys = checkMissingKeys(leftObject, rightObject);
         if (!_.isEmpty(missingKeys.inLeftButNotRight) ||
             !_.isEmpty(missingKeys.inRightButNotLeft)) {
