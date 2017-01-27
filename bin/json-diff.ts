@@ -16,7 +16,7 @@ ${chalk.green(`+++ ${rightFileName}`)}`;
 
   const diffParts = jsdiff.diffJson(left, right);
 
-  _.each(diffParts, (part) => {
+  _.each(diffParts, part => {
     let color = "dim";
     let symbol = " ";
 
