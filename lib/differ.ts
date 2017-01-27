@@ -25,7 +25,7 @@ function checkDifferentValues(left: Object, right: Object) {
   const leftKeys = filterKeys(_.keys(left));
   const rightKeys = filterKeys(_.keys(right));
   const commonKeys = _.intersection(leftKeys, rightKeys);
-  const differences: Array<any> = [];
+  const differences: Array<_.Dictionary<{}>> = [];
 
   _.each(commonKeys, (key: string) => {
     const leftValue = left[key];
@@ -38,7 +38,7 @@ function checkDifferentValues(left: Object, right: Object) {
       leftValue.$date;
 
     if (_.isObject(leftValue) && !leftValue.$oid) {
-      const toDelete: Array<any> = [];
+      const toDelete: Array<string> = [];
 
       _.each(leftValue, (value: any, key: string) => {
         if (_.isObject(value) && !_.isArray(value) && value.$oid) {
@@ -76,7 +76,11 @@ function checkMissingKeys(left: Object, right: Object) {
 }
 
 // Given two arrays, return elements that appear in one but not the other.
-export function checkMissingElements(left: _.Dictionary<{}>, right: _.Dictionary<{}>) {
+export function checkMissingElements(
+  left: _.Dictionary<{}>,
+  right: _.Dictionary<{}>
+): { inLeftButNotRight: Array<_.Dictionary<{}>>, inRightButNotLeft: Array<_.Dictionary<{}>> } {
+// export function checkMissingElements(left: _.Dictionary<{}>, right: _.Dictionary<{}>) {
   const leftKeys = _.map(left, "uniqueKey");
   const rightKeys = _.map(right, "uniqueKey");
   const inLeftButNotRight = _.map(_.difference(leftKeys, rightKeys), (
@@ -101,12 +105,29 @@ export function checkMissingElements(left: _.Dictionary<{}>, right: _.Dictionary
   return { inLeftButNotRight, inRightButNotLeft };
 }
 
+export interface DiffResult {
+  inLeftButNotRight: Array<_.Dictionary<{}>>;
+  inRightButNotLeft: Array<_.Dictionary<{}>>;
+  left: _.Dictionary<{}>;
+  right: _.Dictionary<{}>;
+  missingKeys: MissingKeys;
+  differentValues: Array<_.Dictionary<{}>>;
+}
+
+export interface MissingKeys {
+  inLeftButNotRight: Array<string>;
+  inRightButNotLeft: Array<string>;
+}
+
 // Given two arrays, return an array for each changed object that explains
 // whether it has different values or missing keys.
-export function diff(left: Array<any>, right: Array<any>) {
-  const result: Array<any> = [];
+export function diff(
+  left: Array<_.Dictionary<{}>>,
+  right: Array<_.Dictionary<{}>>
+): Array<DiffResult> {
+  const result: Array<DiffResult> = [];
 
-  _.each(left, (leftObject: Object) => {
+  _.each(left, (leftObject: _.Dictionary<{}>) => {
     const rightObject = _.find(
       right,
       (rightObject: Object) =>
@@ -117,10 +138,7 @@ export function diff(left: Array<any>, right: Array<any>) {
       return;
     }
 
-    const ret: { missingKeys: Object, differentValues: Array<any> } = {
-      missingKeys: [],
-      differentValues: []
-    };
+    const ret: DiffResult = { missingKeys: {inLeftButNotRight: [], inRightButNotLeft: []}, differentValues: [], inLeftButNotRight: [], inRightButNotLeft: [], left: {}, right: {} };
 
     const missingKeys = checkMissingKeys(leftObject, rightObject);
 
