@@ -73,14 +73,16 @@ const differences = diff(left, right);
 if (differences.length) {
     stream.push(`Differences between ${leftFileName} and ${rightFileName}`);
     stream.push();
-    _.each(differences, ({ left, right, differentValues, missingKeys }) => {
-        stream.push(`Unique Object Id: ${left[uniqueKey]}`);
-        stream.push();
-        if (differentValues) {
+    _.each(differences, ({ left, right, differentValues, missingKeys }, idx) => {
+        if (differentValues.length && idx === 0) {
+            stream.push(`Unique Object Id: ${left[uniqueKey]}`);
+            stream.push();
+        }
+        if (differentValues.length) {
             stream.push("Difference in values");
             _.each(differentValues, ({ key, left: leftValue, right: rightValue }) => {
                 stream.push(`${pad("key")}: ${key}`);
-                if (_.isObject(leftValue) && !_.isArray(leftValue) && _.isObject(rightValue) && !_.isObject(rightValue)) {
+                if (_.isObject(leftValue) && _.isObject(rightValue)) {
                     return stream.push(jsonDiff(leftValue, rightValue));
                 }
                 stream.push(`${pad(leftFileName)}: ${JSON.stringify(leftValue, null, 2)}`);
