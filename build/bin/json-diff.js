@@ -6,6 +6,9 @@ const path = require("path");
 const differ = require("../lib/differ");
 const chalk = require("chalk");
 const jsdiff = require("diff");
+const stream_1 = require("../lib/stream");
+const pager = require("default-pager");
+const stream = new stream_1.default();
 function jsonDiff(left, right) {
     let diff = `
 ${chalk.red(`--- ${leftFileName}`)}
@@ -25,7 +28,8 @@ ${chalk.green(`+++ ${rightFileName}`)}`;
         const value = symbol + part.value.slice(1);
         diff += chalk[color](value);
     });
-    console.log(diff);
+    diff += "\n";
+    return diff;
 }
 const { checkMissingElements, diff } = differ;
 const leftFileName = process.argv[2];
@@ -54,62 +58,64 @@ function pad(str) {
 }
 const missingElements = checkMissingElements(left, right);
 if (missingElements.inLeftButNotRight.length) {
-    console.log(`In ${leftFileName} but not ${rightFileName}`);
-    console.log();
-    console.log(JSON.stringify(missingElements.inLeftButNotRight, null, 2));
-    console.log();
+    stream.push(`In ${leftFileName} but not ${rightFileName}`);
+    stream.push();
+    stream.push(JSON.stringify(missingElements.inLeftButNotRight, null, 2));
+    stream.push();
 }
 if (missingElements.inRightButNotLeft.length) {
-    console.log(`In ${rightFileName} but not ${leftFileName}`);
-    console.log();
-    console.log(JSON.stringify(missingElements.inRightButNotLeft, null, 2));
-    console.log();
+    stream.push(`In ${rightFileName} but not ${leftFileName}`);
+    stream.push();
+    stream.push(JSON.stringify(missingElements.inRightButNotLeft, null, 2));
+    stream.push();
 }
 const differences = diff(left, right);
 if (differences.length) {
-    console.log(`Differences between ${leftFileName} and ${rightFileName}`);
-    console.log();
+    stream.push(`Differences between ${leftFileName} and ${rightFileName}`);
+    stream.push();
     _.each(differences, ({ left, right, differentValues, missingKeys }) => {
-        console.log(`Unique Object Id: ${left[uniqueKey]}`);
-        console.log();
+        stream.push(`Unique Object Id: ${left[uniqueKey]}`);
+        stream.push();
         if (differentValues) {
-            console.log("Difference in values");
+            stream.push("Difference in values");
             _.each(differentValues, ({ key, left: leftValue, right: rightValue }) => {
-                console.log(`${pad("key")}: ${key}`);
+                stream.push(`${pad("key")}: ${key}`);
                 if (_.isObject(leftValue) && _.isObject(rightValue)) {
-                    return jsonDiff(leftValue, rightValue);
+                    return stream.push(jsonDiff(leftValue, rightValue));
                 }
-                console.log(`${pad(leftFileName)}: ${JSON.stringify(leftValue, null, 2)}`);
-                console.log(`${pad(rightFileName)}: ${JSON.stringify(rightValue, null, 2)}`);
-                console.log();
+                stream.push(`${pad(leftFileName)}: ${JSON.stringify(leftValue, null, 2)}`);
+                stream.push(`${pad(rightFileName)}: ${JSON.stringify(rightValue, null, 2)}`);
+                stream.push();
             });
         }
         if (missingKeys &&
             (missingKeys.inLeftButNotRight &&
                 missingKeys.inLeftButNotRight.length ||
                 missingKeys.inRightButNotLeft && missingKeys.inRightButNotLeft.length)) {
-            console.log("Difference in keys");
-            console.log();
+            stream.push("Difference in keys");
+            stream.push();
             if (missingKeys.inLeftButNotRight.length) {
-                console.log(`keys in ${leftFileName} but not in ${rightFileName}`);
-                console.log();
+                stream.push(`keys in ${leftFileName} but not in ${rightFileName}`);
+                stream.push();
                 _.each(missingKeys.inLeftButNotRight, missingKey => {
-                    console.log(`${pad("key")}: ${missingKey}`);
-                    console.log(`${pad(leftFileName)}: ${JSON.stringify(left[missingKey], null, 2)}`);
-                    console.log(`${pad(rightFileName)}: ${JSON.stringify(right[missingKey], null, 2)}`);
-                    console.log();
+                    stream.push(`${pad("key")}: ${missingKey}`);
+                    stream.push(`${pad(leftFileName)}: ${JSON.stringify(left[missingKey], null, 2)}`);
+                    stream.push(`${pad(rightFileName)}: ${JSON.stringify(right[missingKey], null, 2)}`);
+                    stream.push();
                 });
             }
             if (missingKeys.inRightButNotLeft.length) {
-                console.log(`keys in ${rightFileName} but not in ${leftFileName}`);
-                console.log();
+                stream.push(`keys in ${rightFileName} but not in ${leftFileName}`);
+                stream.push();
                 _.each(missingKeys.inRightButNotLeft, missingKey => {
-                    console.log(`${pad("key")}: ${missingKey}`);
-                    console.log(`${pad(leftFileName)}: ${JSON.stringify(left[missingKey], null, 2)}`);
-                    console.log(`${pad(rightFileName)}: ${JSON.stringify(right[missingKey], null, 2)}`);
-                    console.log();
+                    stream.push(`${pad("key")}: ${missingKey}`);
+                    stream.push(`${pad(leftFileName)}: ${JSON.stringify(left[missingKey], null, 2)}`);
+                    stream.push(`${pad(rightFileName)}: ${JSON.stringify(right[missingKey], null, 2)}`);
+                    stream.push();
                 });
             }
         }
     });
+    stream.push(null);
+    stream.pipe(pager());
 }
