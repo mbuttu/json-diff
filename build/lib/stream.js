@@ -16,3 +16,4 @@ class Stream {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Stream;
+//# sourceMappingURL=stream.js.map

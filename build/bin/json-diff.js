@@ -80,7 +80,7 @@ if (differences.length) {
             stream.push("Difference in values");
             _.each(differentValues, ({ key, left: leftValue, right: rightValue }) => {
                 stream.push(`${pad("key")}: ${key}`);
-                if (_.isObject(leftValue) && _.isObject(rightValue)) {
+                if (_.isObject(leftValue) && !_.isArray(leftValue) && _.isObject(rightValue) && !_.isObject(rightValue)) {
                     return stream.push(jsonDiff(leftValue, rightValue));
                 }
                 stream.push(`${pad(leftFileName)}: ${JSON.stringify(leftValue, null, 2)}`);
@@ -119,3 +119,4 @@ if (differences.length) {
     stream.push(null);
     stream.pipe(pager());
 }
+//# sourceMappingURL=json-diff.js.map

@@ -7,11 +7,10 @@ exports.options = {
     // changed by the caller.
     ignore: []
 };
-const { ignore, uniqueKey } = exports.options;
 // Given a list of `keys`, return a new list with all of the keys listed in
 // `ignore` removed.
 function filterKeys(keys) {
-    return _.filter(keys, (key) => !_.includes(ignore, key));
+    return _.filter(keys, (key) => !_.includes(exports.options.ignore, key));
 }
 // Returns true if the first item in the array is a mongo ObjectId.
 function checkIfArrayOfObjectIds(array) {
@@ -68,10 +67,10 @@ function checkMissingElements(left, right) {
     const leftKeys = _.map(left, "uniqueKey");
     const rightKeys = _.map(right, "uniqueKey");
     const inLeftButNotRight = _.map(_.difference(leftKeys, rightKeys), (key) => {
-        return _.find(left, (leftObject) => leftObject[uniqueKey] === key);
+        return _.find(left, (leftObject) => leftObject[exports.options.uniqueKey] === key);
     });
     const inRightButNotLeft = _.map(_.difference(rightKeys, leftKeys), (key) => {
-        return _.find(right, (rightObject) => rightObject[uniqueKey] === key);
+        return _.find(right, (rightObject) => rightObject[exports.options.uniqueKey] === key);
     });
     return { inLeftButNotRight, inRightButNotLeft };
 }
@@ -81,7 +80,7 @@ exports.checkMissingElements = checkMissingElements;
 function diff(left, right) {
     const result = [];
     _.each(left, (leftObject) => {
-        const rightObject = _.find(right, (rightObject) => _.isEqual(rightObject[uniqueKey], leftObject[uniqueKey]));
+        const rightObject = _.find(right, (rightObject) => _.isEqual(rightObject[exports.options.uniqueKey], leftObject[exports.options.uniqueKey]));
         if (!rightObject) {
             return;
         }
@@ -109,3 +108,4 @@ function diff(left, right) {
     return result;
 }
 exports.diff = diff;
+//# sourceMappingURL=differ.js.map

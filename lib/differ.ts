@@ -8,12 +8,10 @@ export const options: {uniqueKey: string, ignore: Array<string>} = {
   ignore: []
 };
 
-const {ignore, uniqueKey} = options;
-
 // Given a list of `keys`, return a new list with all of the keys listed in
 // `ignore` removed.
 function filterKeys(keys: Array<string>) {
-  return _.filter(keys, (key: string) => !_.includes(ignore, key));
+  return _.filter(keys, (key: string) => !_.includes(options.ignore, key));
 }
 
 // Returns true if the first item in the array is a mongo ObjectId.
@@ -92,7 +90,7 @@ export function checkMissingElements(
     {
       return _.find(
         left,
-        (leftObject: Object) => leftObject[uniqueKey] === key
+        (leftObject: Object) => leftObject[options.uniqueKey] === key
       );
     });
   const inRightButNotLeft = _.map(_.difference(rightKeys, leftKeys), (
@@ -101,7 +99,7 @@ export function checkMissingElements(
     {
       return _.find(
         right,
-        (rightObject: Object) => rightObject[uniqueKey] === key
+        (rightObject: Object) => rightObject[options.uniqueKey] === key
       );
     });
 
@@ -134,7 +132,7 @@ export function diff(
     const rightObject = _.find(
       right,
       (rightObject: Object) =>
-        _.isEqual(rightObject[uniqueKey], leftObject[uniqueKey])
+        _.isEqual(rightObject[options.uniqueKey], leftObject[options.uniqueKey])
     );
 
     if (!rightObject) {
