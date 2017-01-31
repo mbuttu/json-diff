@@ -99,8 +99,11 @@ if (differences.length) {
   stream.push();
 
   _.each(differences, ({ left, right, differentValues, missingKeys }, idx) => {
+    const hasMissingKeys = missingKeys &&
+      (missingKeys.inLeftButNotRight && missingKeys.inLeftButNotRight.length ||
+        missingKeys.inRightButNotLeft && missingKeys.inRightButNotLeft.length);
 
-    if (differentValues.length && idx === 0) {
+    if ((differentValues.length || hasMissingKeys)) {
       stream.push(`Unique Object Id: ${left[uniqueKey]}`);
       stream.push();
     }
@@ -124,12 +127,7 @@ if (differences.length) {
       });
     }
 
-    if (
-      missingKeys &&
-        (missingKeys.inLeftButNotRight &&
-          missingKeys.inLeftButNotRight.length ||
-          missingKeys.inRightButNotLeft && missingKeys.inRightButNotLeft.length)
-    ) {
+    if (hasMissingKeys) {
       stream.push("Difference in keys");
       stream.push();
 

@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 
-export const options: {uniqueKey: string, ignore: Array<string>} = {
+export const options: { uniqueKey: string, ignore: Array<string> } = {
   // A `uniqueKey` is required, and should be set by the caller.
   uniqueKey: "",
   // A list of keys to ignore in `filterKeys`. This is exported and can be
@@ -55,7 +55,7 @@ function checkDifferentValues(left: Object, right: Object) {
     // Don't compare the values if they're ObjectIds or dates, since they
     // change between each call to `node make init`.
     if (!isObjectId && !isDate && !_.isEqual(leftValue, rightValue)) {
-      differences.push({key, left: leftValue, right: rightValue});
+      differences.push({ key, left: leftValue, right: rightValue });
     }
   });
 
@@ -70,7 +70,7 @@ function checkMissingKeys(left: Object, right: Object) {
   const inLeftButNotRight = _.difference(leftKeys, rightKeys);
   const inRightButNotLeft = _.difference(rightKeys, leftKeys);
 
-  return {inLeftButNotRight, inRightButNotLeft};
+  return { inLeftButNotRight, inRightButNotLeft };
 }
 
 // Given two arrays, return elements that appear in one but not the other.
@@ -103,7 +103,7 @@ export function checkMissingElements(
       );
     });
 
-  return {inLeftButNotRight, inRightButNotLeft};
+  return { inLeftButNotRight, inRightButNotLeft };
 }
 
 export interface DiffResult {
@@ -140,7 +140,7 @@ export function diff(
     }
 
     const ret: DiffResult = {
-      missingKeys: {inLeftButNotRight: [], inRightButNotLeft: []},
+      missingKeys: { inLeftButNotRight: [], inRightButNotLeft: [] },
       differentValues: [],
       inLeftButNotRight: [],
       inRightButNotLeft: [],
@@ -164,7 +164,7 @@ export function diff(
     }
 
     if (!_.isEmpty(ret)) {
-      result.push(_.extend(ret, {left: leftObject, right: rightObject}));
+      result.push(_.extend(ret, { left: leftObject, right: rightObject }));
     }
   });
 

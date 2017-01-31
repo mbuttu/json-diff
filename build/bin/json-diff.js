@@ -74,7 +74,10 @@ if (differences.length) {
     stream.push(`Differences between ${leftFileName} and ${rightFileName}`);
     stream.push();
     _.each(differences, ({ left, right, differentValues, missingKeys }, idx) => {
-        if (differentValues.length && idx === 0) {
+        const hasMissingKeys = missingKeys &&
+            (missingKeys.inLeftButNotRight && missingKeys.inLeftButNotRight.length ||
+                missingKeys.inRightButNotLeft && missingKeys.inRightButNotLeft.length);
+        if ((differentValues.length || hasMissingKeys)) {
             stream.push(`Unique Object Id: ${left[uniqueKey]}`);
             stream.push();
         }
@@ -90,10 +93,7 @@ if (differences.length) {
                 stream.push();
             });
         }
-        if (missingKeys &&
-            (missingKeys.inLeftButNotRight &&
-                missingKeys.inLeftButNotRight.length ||
-                missingKeys.inRightButNotLeft && missingKeys.inRightButNotLeft.length)) {
+        if (hasMissingKeys) {
             stream.push("Difference in keys");
             stream.push();
             if (missingKeys.inLeftButNotRight.length) {
